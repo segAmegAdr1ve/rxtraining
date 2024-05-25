@@ -1,8 +1,13 @@
 package ru.artkorchagin.rxtraining.rx;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import ru.artkorchagin.rxtraining.exceptions.ExpectedException;
-import ru.artkorchagin.rxtraining.exceptions.NotImplementedException;
 
 /**
  * @author Arthur Korchagin (artur.korchagin@simbirsoft.com)
@@ -20,7 +25,7 @@ public class RxCreatingTraining {
      * @return {@link Observable}, который эммитит только значение {@code value}
      */
     public Observable<Integer> valueToObservable(int value) {
-        throw new NotImplementedException();
+        return Observable.just(value);
     }
 
     /**
@@ -30,7 +35,7 @@ public class RxCreatingTraining {
      * @return {@link Observable}, который эммитит по порядку все строки из заданного массива
      */
     public Observable<String> arrayToObservable(String[] array) {
-        throw new NotImplementedException();
+        return Observable.fromArray(array);
     }
 
     /**
@@ -41,7 +46,12 @@ public class RxCreatingTraining {
      * {@link #expensiveMethod()}
      */
     public Observable<Integer> expensiveMethodResult() {
-        throw new NotImplementedException();
+        return Observable.defer(new Callable<ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> call() {
+                return Observable.just(expensiveMethod());
+            }
+        });
     }
 
     /**
@@ -55,7 +65,7 @@ public class RxCreatingTraining {
      * {@code onError} или {@code onComplete} не должны вызваться.
      */
     public Observable<Long> increasingSequenceWithDelays(long initialDelay, long period) {
-        throw new NotImplementedException();
+        return Observable.interval(initialDelay, period, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -66,7 +76,7 @@ public class RxCreatingTraining {
      * задержкой {@code delay}
      */
     public Observable<Long> delayedZero(long delay) {
-        throw new NotImplementedException();
+        return Observable.timer(delay, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -80,7 +90,15 @@ public class RxCreatingTraining {
      * 3. {@link #unstableMethod(boolean)}
      */
     public Observable<Integer> combinationExpensiveMethods(final boolean unstableCondition) {
-        throw new NotImplementedException();
+        return Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                emitter.onNext(expensiveMethod());
+                emitter.onNext(alternativeExpensiveMethod());
+                emitter.onNext(unstableMethod(unstableCondition));
+                emitter.onComplete();
+            }
+        });
     }
 
     /**
@@ -90,7 +108,7 @@ public class RxCreatingTraining {
      * {@code onComplete} или {@code onError}
      */
     public Observable<Integer> withoutAnyEvents() {
-        throw new NotImplementedException();
+        return Observable.never();
     }
 
     /**
@@ -99,7 +117,7 @@ public class RxCreatingTraining {
      * @return {@link Observable} который не эммитит значения, вызывается только {@code onComplete}
      */
     public Observable<Integer> onlyComplete() {
-        throw new NotImplementedException();
+        return Observable.empty();
     }
 
     /**
@@ -109,7 +127,7 @@ public class RxCreatingTraining {
      * ошибка {@link ExpectedException}
      */
     public Observable<Integer> onlyError() {
-        throw new NotImplementedException();
+        return Observable.error(new ExpectedException());
     }
 
     /* Вспомогательные методы */

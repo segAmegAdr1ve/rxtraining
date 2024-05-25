@@ -1,7 +1,9 @@
 package ru.artkorchagin.rxtraining.rx;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
-import ru.artkorchagin.rxtraining.exceptions.NotImplementedException;
+import io.reactivex.functions.Predicate;
 
 /**
  * @author Arthur Korchagin (artur.korchagin@simbirsoft.com)
@@ -19,7 +21,12 @@ public class RxFilteringTraining {
      * отфильтрованы
      */
     public Observable<Integer> onlyPositiveNumbers(Observable<Integer> intValues) {
-        throw new NotImplementedException();
+        return intValues.filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer number) {
+                return number > 0;
+            }
+        });
     }
 
     /**
@@ -30,7 +37,7 @@ public class RxFilteringTraining {
      * @return {@link Observable} который эммитит последние значения
      */
     public Observable<Integer> onlyLastValues(int count, Observable<Integer> intValues) {
-        throw new NotImplementedException();
+        return intValues.takeLast(count);
     }
 
     /**
@@ -41,7 +48,7 @@ public class RxFilteringTraining {
      * @return {@link Observable} который эммитит первые значения
      */
     public Observable<Integer> onlyFirstValues(int count, Observable<Integer> intValues) {
-        throw new NotImplementedException();
+        return intValues.take(count);
     }
 
     /**
@@ -53,7 +60,7 @@ public class RxFilteringTraining {
      * {@code count} значений
      */
     public Observable<Integer> ignoreFirstValues(int count, Observable<Integer> intValues) {
-        throw new NotImplementedException();
+        return intValues.skip(count);
     }
 
     /**
@@ -66,7 +73,7 @@ public class RxFilteringTraining {
      * {@code periodMills}
      */
     public Observable<Integer> onlyLastPerInterval(int periodMills, Observable<Integer> intValues) {
-        throw new NotImplementedException();
+        return intValues.sample(periodMills, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -78,7 +85,7 @@ public class RxFilteringTraining {
      * если время ожидания превышает {@code timeMills}
      */
     public Observable<Integer> errorIfLongWait(int timeMills, Observable<Integer> intValues) {
-        throw new NotImplementedException();
+        return intValues.timeout(timeMills, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -89,7 +96,7 @@ public class RxFilteringTraining {
      * значений
      */
     public Observable<Integer> ignoreDuplicates(Observable<Integer> intValues) {
-        throw new NotImplementedException();
+        return intValues.distinct();
     }
 
     /**
@@ -100,7 +107,7 @@ public class RxFilteringTraining {
      * повторяет предыдущее, оно пропускается
      */
     public Observable<Integer> onlyChangedValues(Observable<Integer> intValues) {
-        throw new NotImplementedException();
+        return intValues.distinctUntilChanged();
     }
 
 }

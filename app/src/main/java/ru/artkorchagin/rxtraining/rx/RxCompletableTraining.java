@@ -1,8 +1,12 @@
 package ru.artkorchagin.rxtraining.rx;
 
 import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.CompletableSource;
 import io.reactivex.Single;
-import ru.artkorchagin.rxtraining.exceptions.NotImplementedException;
+import io.reactivex.functions.Function;
+import ru.artkorchagin.rxtraining.exceptions.ExpectedException;
 
 /**
  * @author Arthur Korchagin (artur.korchagin@simbirsoft.com)
@@ -18,7 +22,13 @@ public class RxCompletableTraining {
      * @return {@link Completable}, который вызывает {@link #havyMethod()}
      */
     Completable callFunction() {
-        throw new NotImplementedException();
+        return Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter emitter) throws Exception {
+                havyMethod();
+                emitter.onComplete();
+            }
+        });
     }
 
     /**
@@ -29,7 +39,16 @@ public class RxCompletableTraining {
      * @return {@code Completable}
      */
     Completable completeWhenTrue(Single<Boolean> checkSingle) {
-        throw new NotImplementedException();
+        return checkSingle.flatMapCompletable(new Function<Boolean, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Boolean value) {
+                if (value) {
+                    return Completable.complete();
+                } else {
+                    return Completable.error(new ExpectedException());
+                }
+            }
+        });
     }
 
     /* Вспомогательные методы */

@@ -1,9 +1,11 @@
 package ru.artkorchagin.rxtraining.rx;
 
 import io.reactivex.Maybe;
+import io.reactivex.MaybeSource;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import ru.artkorchagin.rxtraining.exceptions.NotImplementedException;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
 
 /**
  * @author Arthur Korchagin (artur.korchagin@simbirsoft.com)
@@ -21,7 +23,11 @@ public class RxMaybeTraining {
      * либо не эммитит ничего, если {@code value} отрицательное
      */
     Maybe<Integer> positiveOrEmpty(Integer value) {
-        throw new NotImplementedException();
+        if(value > 0) {
+            return Maybe.just(value);
+        } else {
+            return Maybe.empty();
+        }
     }
 
     /**
@@ -32,7 +38,16 @@ public class RxMaybeTraining {
      * положительное число, иначе не эммитит ничего
      */
     Maybe<Integer> positiveOrEmpty(Single<Integer> valueSingle) {
-        throw new NotImplementedException();
+        return valueSingle.flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer value) {
+                if (value > 0) {
+                    return Maybe.just(value);
+                } else {
+                    return Maybe.empty();
+                }
+            }
+        });
     }
 
     /**
@@ -43,7 +58,12 @@ public class RxMaybeTraining {
      * последовательность пустая
      */
     Maybe<Integer> calculateSumOfValues(Observable<Integer> integerObservable) {
-        throw new NotImplementedException();
+        return integerObservable.reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer value1, Integer value2) throws Exception {
+                return value1 + value2;
+            }
+        });
     }
 
     /**
@@ -54,7 +74,7 @@ public class RxMaybeTraining {
      * {@code defaultValue} если последовательность пустая
      */
     Single<Integer> leastOneElement(Maybe<Integer> integerMaybe, int defaultValue) {
-        throw new NotImplementedException();
+        return integerMaybe.defaultIfEmpty(defaultValue).toSingle();
     }
 
 }
